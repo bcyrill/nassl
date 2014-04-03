@@ -343,6 +343,16 @@ static PyObject* nassl_SSL_get_cipher_name(nassl_SSL_Object *self, PyObject *arg
 }
 
 
+static PyObject* nassl_SSL_get_cipher_strength(nassl_SSL_Object *self, PyObject *args) {
+	const SSL_CIPHER *currentCipher = SSL_get_current_cipher(self->ssl);
+	
+	if (currentCipher != NULL)
+		return Py_BuildValue("l", currentCipher->algo_strength);
+	
+	return NULL;
+}
+
+
 static PyObject* nassl_SSL_use_certificate_file(nassl_SSL_Object *self, PyObject *args) {
     const char *filePath = NULL;
     int certType = 0;
@@ -597,6 +607,9 @@ static PyMethodDef nassl_SSL_Object_methods[] = {
     },
     {"get_cipher_name", (PyCFunction)nassl_SSL_get_cipher_name, METH_NOARGS,
      "OpenSSL's SSL_get_cipher_name()."
+    },
+    {"get_cipher_strength", (PyCFunction)nassl_SSL_get_cipher_strength, METH_NOARGS,
+     "Returns OpenSSL's strength rating of the cipher."
     },
     {"use_certificate_file", (PyCFunction)nassl_SSL_use_certificate_file, METH_VARARGS,
      "OpenSSL's SSL_use_certificate_file()."
