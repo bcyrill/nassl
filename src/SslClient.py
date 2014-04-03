@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from nassl._nassl import SSL_CTX, SSL, BIO, WantReadError, OpenSSLError, X509, WantX509LookupError
-from nassl import SSLV23, SSLV2, SSL_VERIFY_PEER, TLSEXT_STATUSTYPE_ocsp
+from nassl import SSLV23, SSLV2, SSL_VERIFY_PEER, TLSEXT_STATUSTYPE_ocsp, SSL_HIGH, SSL_MEDIUM, SSL_LOW, SSL_EXPORT, SSL_TXT_HIGH, SSL_TXT_MEDIUM, SSL_TXT_LOW, SSL_TXT_EXPORT
 from X509Certificate import X509Certificate
 from OcspResponse import OcspResponse
 
@@ -202,6 +202,21 @@ class SslClient(object):
 
     def get_current_cipher_bits(self):
         return self._ssl.get_cipher_bits()
+
+
+    def get_current_cipher_strength(self):
+        ssl_strength = self._ssl.get_cipher_strength()
+        
+        if (ssl_strength & SSL_HIGH):
+            return SSL_TXT_HIGH
+        elif (ssl_strength & SSL_MEDIUM):
+            return SSL_TXT_MEDIUM
+        elif (ssl_strength & SSL_LOW):
+            return SSL_TXT_LOW
+        elif (ssl_strength & SSL_EXPORT):
+            return SSL_TXT_EXPORT
+        else:
+            return None
 
 
     def use_private_key(self, certFile, certType, keyFile, keyType, keyPassword=''):
